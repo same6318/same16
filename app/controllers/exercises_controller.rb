@@ -8,14 +8,15 @@ class ExercisesController < ApplicationController
   def exercise2
     # 【要件】注文されていない料理を提供しているすべてのお店を返すこと
     #   * left_outer_joinsを使うこと
-    @shops = Shop.left_outer_joins(:foods).select(:name).distinct #重複を消す
+    @shops = Shop.left_outer_joins(foods: :order_foods).where(order_foods: {order_id:nil})
   end
 
   def exercise3 
     # 【要件】配達先の一番多い住所を返すこと
     #   * joinsを使うこと
     #   * 取得したAddressのインスタンスにorders_countと呼びかけると注文の数を返すこと
-    @address = Address.joins(:orders).group("city").select("COUNT(city) as orders_count, city").order("orders_count DESC").first
+    @address = Address.joins(:orders).group("address_id").select("COUNT(address_id) as orders_count, address_id").order("orders_count DESC").first
+    @address = Address.joins(:orders).group("city").select("COUNT(postalcode) as orders_count, city").order("orders_count DESC").first
     #1.配達先であるcityをグループ化する
     #2.select文でaddressesテーブルのcityカラムを選択して、sql関数であるCOUNTを実行、cityカラムのnullじゃないものを数える。as orders_countとして名前変更している。
     #3.order文でorders_countを「DESC」降順表示する
